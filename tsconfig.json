@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"esModuleInterop": true,
+		"target": "es6",
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"outDir": "dist",
+		"declaration": false,
+	},
+	"lib": ["es2018"],
+  "include": ["src/**/*"],
+  "exclude": ["front/",
+  "node_modules"]
+}
