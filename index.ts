@@ -1,50 +1,30 @@
-import { httpServer } from "./src/http_server/index";
-import WebSocket from 'ws';
+import { httpServer as server } from './src/http_server/index';
+import { Server as WebSocketServer } from 'ws';
+import RequestHandler from './src/services/handler';
+import { db } from './src/data/database';
 
-const HTTP_PORT = 8181;
+const wss = new WebSocketServer({ server });
 
-console.log(`Start static http server on the ${HTTP_PORT} port!`);
-httpServer.listen(HTTP_PORT);
+const HTTP_PORT = 3000;
 
+wss.on('connection', (socket) => {
+  const requestHandler = new RequestHandler(socket);
 
-// Create a WebSocket server
-const wss = new WebSocket.Server({ port: 3000 });
-
-// Event handler for new connections
-wss.on('connection', (ws) => {
-  console.log('New client connected');
-
-  // Event handler for receiving messages from clients
-  ws.on('message', (message: string) => {
-    console.log(`Received message: ${message}`);
-
-    const {data, id} = JSON.parse(message)
-    console.log(data);
-
-    // Echo the received message back to the client
-
-    const data_1 = JSON.stringify({
-        name: data.name,
-        index: id,
-        error: false,
-        errorText: "",
-        
-        
-    });
-
-    const dev = {
-        type: "reg",
-        data: data_1,
-            
-        id: 0,
+  socket.on('message', (message) => {
+    try {
+      console.log(message);
+      const request = JSON.parse(message.toString());
+      requestHandler.handleRequest(request);
+    } catch (error) {
+      console.error('Error parsing request:', error);
     }
-    const dev_2 = JSON.stringify(dev);
-    ws.send(dev_2);
-    console.log(JSON.parse(dev_2));
   });
 
-  // Event handler for connection close
-  ws.on('close', () => {
-    console.log('Client disconnected');
+  socket.on('close', () => {
+    // Handle socket close event if needed
   });
+});
+
+server.listen(HTTP_PORT, () => {
+  console.log('WebSocket server is running on port 3000');
 });

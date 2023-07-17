@@ -24,7 +24,9 @@
         "node_modules"
     ],
     "dependencies": {
+        "@types/uuid": "^9.0.2",
         "@types/ws": "^8.5.5",
+        "uuid": "^9.0.0",
         "ws": "^8.13.0"
     }
 }
